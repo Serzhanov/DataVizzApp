@@ -1,7 +1,7 @@
 <template>
   <div>
     <h1 class="chart-title">{{title}}</h1>
-    <line-chart prefix="$" xtitle="Time" ytitle="Price" loading="Loading..." :library="chartOptions" :data="chartData"></line-chart>
+    <line-chart empty="Please check the box below to view the data." prefix="$" xtitle="Time"  loading="Loading..." :library="chartOptions" :data="chartData"></line-chart>
   </div>
 </template>
 
@@ -22,17 +22,6 @@ export default {
       return {}
     }
   },
-  // watch:{
-  //   min(newValue){
-  //     var min=Math.round(newValue/ 10) * 10<=10?0:Math.round(newValue/ 10) * 10-10
-  //     this.chartOptions.scales.y.min=min
-  //     console.log(min,'here')
-  //   },
-  //   max(newValue){
-  //     var max=Math.round(newValue/ 10) * 10+10
-  //     this.chartOptions.scales.y.max=max
-  //   }
-  // },
   data() {
     return {
       chartOptions: {
@@ -41,10 +30,8 @@ export default {
         pointRadius:0,
         scales: {
           y: {
-            // eslint-disable-next-line vue/no-computed-properties-in-data
-            min:this.getMin(),
-            // eslint-disable-next-line vue/no-computed-properties-in-data
-            max: this.getMax(),
+            min:this.min,
+            max: this.max,
             beginAtZero: true,
             ticks: {
               stepSize: 10,
@@ -76,17 +63,19 @@ export default {
   methods:{
     getMin(){
       if(this.daily){
-        return this.min-1
+        return Math.min(...Object.values(this.min))-1
       }
-      var min=Math.round(this.min/ 10) * 10<=10?0:Math.round(this.min/ 10) * 10-10
+      var tempMin=Math.min(...Object.values(this.min))
+      var min=Math.round(tempMin/ 10) * 10<=10?0:Math.round(tempMin/ 10) * 10-10
       console.log(min,'Min value')
       return min
     },
     getMax(){
       if(this.daily){
-        return this.max+1
+        return  Math.max(...Object.values(this.max))+1
       }
-      var max=Math.round(this.max/ 10) * 10 + 10
+      var tempMax=Math.max(...Object.values(this.max))
+      var max=Math.round(tempMax/ 10) * 10 + 10
       console.log(max,'Max value')
       return max
     }

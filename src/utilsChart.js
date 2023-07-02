@@ -37,7 +37,6 @@ export function getOverallData(data) {
         delete item.Count;
     }
 
-    console.log(yearlyData);
     return yearlyData
 }
 

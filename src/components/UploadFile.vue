@@ -1,59 +1,71 @@
 <template>
-    <div class="upload-container">
-        <input type="file" id="fileInput" @change="handleFileSelection" class="file-input" />
-        <label for="fileInput" class="file-label">
-            <span class="file-icon">
-                <i class="fas fa-cloud-upload-alt"></i>
-            </span>
-            <span class="file-text">Select File</span>
-        </label>
-        <span id="fileName" class="file-name">No file selected</span>
-    </div>
+  <div class="upload-container">
+    <input type="file" id="fileInput" @change="handleFileSelection" class="file-input" />
+    <label for="fileInput" class="file-label">
+      <span class="file-icon">
+        <i class="fas fa-cloud-upload-alt"></i>
+      </span>
+      <span class="file-text">{{ buttonText }}</span>
+    </label>
+    <span id="fileName" class="file-name">
+      {{ fileName }}
+      <span v-if="isUploading" class="upload-status">Uploading...</span>
+      <span v-else class="upload-status">Ready to upload</span>
+    </span>
+  </div>
 </template>
+
 <script>
 import api from '../../config';
+
 export default {
-  name:'UploadFile',
+  name: 'UploadFile',
   data() {
     return {
-      selectedFile:null
+      selectedFile: null,
+      fileName: 'No file selected',
+      buttonText: 'Select File',
+      isUploading: false
     };
   },
   methods: {
     async handleFileSelection(event) {
       this.selectedFile = event.target.files[0];
-      if(this.selectedFile){
+      if (this.selectedFile) {
+        this.fileName = this.selectedFile.name;
+        this.buttonText = 'Change File';
+        this.isUploading = true;
         const formData = new FormData();
         formData.append('file', this.selectedFile);
-        await this.upload(formData)
+        await this.upload(formData);
+
+        this.isUploading = false;
       }
     },
-    upload(formData){
+    upload(formData) {
       return new Promise((resolve, reject) => {
-        api.post('/upload', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
-        }
-        )
+        api
+          .post('/upload', formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          })
           .then(response => {
-            console.log(response)
-            const data = response.data
-            this.$emit('assign-data',data)
-            resolve(response)
+            const data = response.data;
+            this.$emit('assign-data', data);
+            resolve(response);
           })
           .catch(error => {
             console.error(error);
-            reject(error)
+            reject(error);
           });
-      })
-
+      });
     }
   }
 };
 </script>
-<style>
 
+<style>
 .upload-container {
   display: flex;
   align-items: center;
@@ -68,14 +80,14 @@ export default {
   display: inline-flex;
   align-items: center;
   padding: 0.5rem 1rem;
-  background-color: #f0f0f0;
-  border: 2px solid #ddd;
+  background-color: #007bff;
+  color: #fff;
   border-radius: 4px;
   transition: background-color 0.3s ease;
 }
 
 .file-label:hover {
-  background-color: #e0e0e0;
+  background-color: #0056b3;
 }
 
 .file-icon {
@@ -86,5 +98,15 @@ export default {
   margin-left: 1rem;
   font-size: 14px;
   color: #777;
+}
+
+.upload-status {
+  font-weight: bold;
+  color: #007bff;
+  margin-left: 0.5rem;
+  font-size: 12px;
+  background-color: #eaf5ff;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
 }
 </style>

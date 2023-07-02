@@ -3,66 +3,62 @@
     <div>
       <UploadFile @assign-data="setData"></UploadFile>
     </div>
-    <RadioButtons :features="features"></RadioButtons>
-    <div v-if="data.length > 0">
-      <LineCharting :min="processedOverallData[1]" :title="'Time & Price'" :max="processedOverallData[2]"
-        :data="processedOverallData[0]"></LineCharting>
+    <RadioButtons @changedOptions="setSelectedFeatures" :features="features"></RadioButtons>
+
+    <div class="overview-container" v-if="data.length > 0">
+      <h1 class="chart-title">Time-Based Overview: Examining Data Trends Over Time</h1>
+      <LineCharting :min="processedOverallData[1]" :max="processedOverallData[2]" :data="processedOverallData[0]">
+      </LineCharting>
     </div>
-    <!-- <div>
-      <LineCharting :min="minPrice" :title="'Time & Price'" :max="maxPrice" :data="processedLineChartData"></LineCharting>
-    </div> -->
+
     <div class="container" v-if="data.length > 0">
-      <h1>Yearly Data</h1>
+      <h1 class="chart-title">Yearly Data Analysis: Exploring Trends and Patterns Over Time</h1>
       <div class="range-container">
-        <label for="start">Start Date:</label>
-        <input type="date" id="start" v-model="startDateYearly" :max="maxStartDate" @change="updateEndDate">
+        <label for="startYearly">Start Date:</label>
+        <div class="date-input">
+          <input type="date" id="startYearly" v-model="startDateYearly" :max="maxStartDate" @change="updateEndDate">
+          <i class="far fa-calendar-alt"></i>
+        </div>
       </div>
       <div class="chart-container">
-        <LineCharting v-if="startDateYearly" :min="processedYearData[1]" :title="'Year Data'" :max="processedYearData[2]"
+        <LineCharting v-if="startDateYearly" :min="processedYearData[1]" :max="processedYearData[2]"
           :data="processedYearData[0]"></LineCharting>
       </div>
     </div>
 
     <div class="container" v-if="data.length > 0">
-      <h1>Montlhy Data</h1>
+      <h1 class="chart-title">Monthly Data Insights: Analyzing Trends and Patterns Over Time</h1>
       <div class="range-container">
-        <label for="start">Start Date:</label>
-        <input type="date" id="start" v-model="startDateMonthly" :max="maxStartDate" @change="updateEndDate">
+        <label for="startMonthly">Start Date:</label>
+        <div class="date-input">
+          <input type="date" id="startMonthly" v-model="startDateMonthly" :max="maxStartDate" @change="updateEndDate">
+          <i class="far fa-calendar-alt"></i>
+        </div>
       </div>
       <div v-for="(month, index) in monthIndexes" :key="index" class="chart-container">
-        {{ value }}
-        <LineCharting v-if="startDateMonthly" :daily="true" :min="processedMonthlyData[index][1]" :title="month + ' Data'"
-          :max="processedMonthlyData[index][2]" :data="processedMonthlyData[index][0]"></LineCharting>
+        <div v-if="startDateMonthly">
+          <h2 class="chart-title">{{ month }} Data</h2>
+          <LineCharting :daily="true" :min="processedMonthlyData[index][1]" :max="processedMonthlyData[index][2]"
+            :data="processedMonthlyData[index][0]"></LineCharting>
+        </div>
       </div>
     </div>
-
   </div>
 </template>
-
 <script>
 import LineCharting from './components/LineChart.vue';
 import UploadFile from './components/UploadFile.vue';
 import RadioButtons from './components/RadioButtons.vue';
-import { getOverallData, getYearDatabyRange, groupObjectsByMonth } from './utils'
-// data = [
-//   {name: 'Workout', data: {'2021-01-01': 3, '2021-01-02': 4}},
-//   {name: 'Call parents', data: {'2021-01-01': 5, '2021-01-02': 3}}
-// ];
+import { getOverallData, getYearDatabyRange, groupObjectsByMonth } from './utilsChart'
 export default {
   components: {
     UploadFile,
     LineCharting,
     RadioButtons
   },
-  watch: {
-    startDateMonthly() {
-      //console.log(this.processedMonthlyData[0][1])
-    }
-  },
   computed: {
     maxStartDate() {
       // Set the maximum start date as today
-      console.log(this.maxDate)
       if (this.maxDate) {
         const maxDateObj = new Date(this.maxDate)
         const maxStartDate = new Date(maxDateObj.getFullYear() - 1, maxDateObj.getMonth(), 0)
@@ -84,12 +80,8 @@ export default {
         let arr = []
         const startDate = new Date(this.startDateMonthly)
         let monthlyData = groupObjectsByMonth(this.data, startDate)
-        // /console.log(groupObjectsByMonth(this.data,startDate))
-        // console.log(monthlyData.map(data=>{
-        //   return this.processData(data)
-        // })
         monthlyData.forEach(data => {
-          arr.push(this.processData(data))
+          arr.push(this.processData(data, true))
         })
         return arr
       }
@@ -102,28 +94,12 @@ export default {
       }
       const startDate = new Date(this.startDateYearly);
       const endDate = new Date(this.endDateYearly);
-      console.log("year", getYearDatabyRange(this.data, startDate, endDate))
       const yearData = getYearDatabyRange(this.data, startDate, endDate)
+      console.log(this.processData(yearData), 'yearData')
       return this.processData(yearData)
     },
     processedOverallData() {
       let overallData = getOverallData(this.data)
-      console.log(this.data)
-      console.log('triggered', overallData)
-      // if (overallData && overallData.length > 0) {
-      //   overallData.forEach((record) => {
-      //     var key = this.formatDate(new Date(record.Date))
-      //     if (this.minPrice > record.Price) {
-      //       this.minPrice = record.Price
-      //     }
-      //     if (this.maxPrice < record.Price) {
-      //       this.maxPrice = record.Price
-      //     }
-      //     obj[key] = record.Price
-      //   })
-      //   console.log('my obj', obj)
-      //   return obj
-      // }
       return this.processData(overallData)
 
     }
@@ -133,8 +109,6 @@ export default {
       startDateYearly: null,
       startDateMonthly: null,
       data: [],
-      minPrice: -1,
-      maxPrice: -1,
       maxDate: null,
       monthIndexes: {
         0: "January",
@@ -151,79 +125,67 @@ export default {
         11: "December"
       },
       features: [],
-      selectedFeatures: ['Price']
+      selectedFeatures: []
     }
   },
   methods: {
     setData(data) {
       this.data = data
       this.features = Object.keys(data[0]);
-      this.minPrice = data[0].Price
-      this.maxPrice = data[0].Price
+      this.features = this.features.filter(element => {
+        if (element === 'Date') {
+          return false
+        }
+        return true
+      })
+      //Default choice is Price
+      this.selectedFeatures.push(this.features.indexOf('Price'))
       this.maxDate = new Date(data[data.length - 1].Date)
     },
     //returns an array .First element is an object of dates ,the two lasts are min and max for y-axis range
-    processData(data) {
+    processData(data, daily = false) {
       if (data.length === 0) {
         return {}
       }
-      let obj = {}
-      console.log(data)
-      let maxPrice = data[0].Price
-      let minPrice = data[0].Price
-      if (data && data.length > 0) {
-        data.forEach((record) => {
-          var key = this.formatDate(new Date(record.Date))
-          if (minPrice > record.Price) {
-            minPrice = record.Price
-          }
-          if (maxPrice < record.Price) {
-            maxPrice = record.Price
-          }
-          obj[key] = record.Price
-        })
-        console.log('my obj', obj)
-      }
-      return [obj, minPrice, maxPrice]
-    },
-    processData2(data) {
-      if (data.length === 0) {
-        return {}
-      }
-      let obj = {}
-      console.log(data)
+      let lineChartDataObj = []
       let minObj = {}
       let maxObj = {}
       if (data && data.length > 0) {
-        let keys = Object.keys(data[0])
-        keys = keys.filter(element => {
-          if (this.selectedFeatures.includes(element)) {
+        let keys = this.features
+        keys = keys.filter((element, index) => {
+          if (this.selectedFeatures.includes(index)) {
             return true
           }
           return false
         })
+        //set min and max of each feature
         for (const key of keys) {
           minObj[key] = data[0][key]
           maxObj[key] = data[0][key]
         }
         for (const key of keys) {
           let dataObj = {}
+          let obj = {}
           data.forEach((record) => {
-            var key = this.formatDate(new Date(record.Date))
+            var keyDate = this.formatDate(new Date(record.Date))
             if (minObj[key] > record[key]) {
               minObj[key] = record[key]
             }
             if (maxObj[key] < record[key]) {
               maxObj[key] = record[key]
             }
-            dataObj[key] = record[key]
+            dataObj[keyDate] = record[key]
 
           })
-          obj[key] = key
+          obj['name'] = key
           obj['data'] = dataObj
+          lineChartDataObj.push(obj)
         }
       }
-      return [obj, minObj, maxObj]
+      return [lineChartDataObj, this.getMin(minObj, daily), this.getMax(maxObj, daily)]
+    },
+    setSelectedFeatures(features) {
+      this.selectedFeatures = features
     },
     formatDate(dateObj) {
       const year = dateObj.getFullYear();
@@ -233,18 +195,77 @@ export default {
       const formattedDate = `${year}-${month}-${day}`;
 
       return formattedDate
+    },
+
+    getMin(minObj, daily = false) {
+      if (daily) {
+        return Math.min(...Object.values(minObj)) - 1
+      }
+      var tempMin = Math.min(...Object.values(minObj))
+      var min = Math.round(tempMin / 10) * 10 <= 10 ? 0 : Math.round(tempMin / 10) * 10 - 10
+      return min
+    },
+    getMax(maxObj, daily = false) {
+      if (daily) {
+        return Math.max(...Object.values(maxObj)) + 1
+      }
+      var tempMax = Math.max(...Object.values(maxObj))
+      var max = Math.round(tempMax / 10) * 10 + 10
+      return max
+    },
+    getYearFromDateStr(str) {
+      //str is yyyy-mm-dd
+      return str.split('-')[0]
     }
   }
 
 }
 </script>
 
+
 <style>
-.chart-title {
-  font-size: 24px;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 20px;
-  text-align: center;
-}
+  .chart-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  .container {
+    margin-top: 20px;
+  }
+
+  .range-container {
+    margin-bottom: 10px;
+  }
+
+  .chart-container {
+    margin-bottom: 40px;
+  }
+
+  .date-input {
+    position: relative;
+    display: inline-block;
+  }
+
+  .date-input input[type="date"] {
+    padding: 8px 32px 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    width: 200px;
+  }
+
+  .date-input i {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    color: #999;
+  }
+
+  .date-input i.far.fa-calendar-alt {
+    font-size: 18px;
+  }
 </style>
