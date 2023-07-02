@@ -3,12 +3,14 @@
     <div>
       <UploadFile @assign-data="setData"></UploadFile>
     </div>
-    <RadioButtons @changedOptions="setSelectedFeatures" :features="features"></RadioButtons>
-
+    <div class="sticky-header">
+      <RadioButtons @changedOptions="setSelectedFeatures" :features="features"></RadioButtons>
+    </div>
     <div class="overview-container" v-if="data.length > 0">
       <h1 class="chart-title">Time-Based Overview: Examining Data Trends Over Time</h1>
       <LineCharting :min="processedOverallData[1]" :max="processedOverallData[2]" :data="processedOverallData[0]">
       </LineCharting>
+      <StatParams :features="selectedFeatures" :data="processedOverallData[0]"></StatParams>
     </div>
 
     <div class="container" v-if="data.length > 0">
@@ -20,9 +22,9 @@
           <i class="far fa-calendar-alt"></i>
         </div>
       </div>
-      <div class="chart-container">
-        <LineCharting v-if="startDateYearly" :min="processedYearData[1]" :max="processedYearData[2]"
-          :data="processedYearData[0]"></LineCharting>
+      <div class="chart-container" v-if="startDateYearly">
+        <LineCharting :min="processedYearData[1]" :max="processedYearData[2]" :data="processedYearData[0]"></LineCharting>
+        <StatParams :features="selectedFeatures" :data="processedYearData[0]"></StatParams>
       </div>
     </div>
 
@@ -40,6 +42,7 @@
           <h2 class="chart-title">{{ month }} Data</h2>
           <LineCharting :daily="true" :min="processedMonthlyData[index][1]" :max="processedMonthlyData[index][2]"
             :data="processedMonthlyData[index][0]"></LineCharting>
+          <StatParams :features="selectedFeatures" :data="processedMonthlyData[index][0]"></StatParams>
         </div>
       </div>
     </div>
@@ -49,12 +52,14 @@
 import LineCharting from './components/LineChart.vue';
 import UploadFile from './components/UploadFile.vue';
 import RadioButtons from './components/RadioButtons.vue';
+import StatParams from './components/StatParams.vue';
 import { getOverallData, getYearDatabyRange, groupObjectsByMonth } from './utilsChart'
 export default {
   components: {
     UploadFile,
     LineCharting,
-    RadioButtons
+    RadioButtons,
+    StatParams
   },
   computed: {
     maxStartDate() {
@@ -95,7 +100,6 @@ export default {
       const startDate = new Date(this.startDateYearly);
       const endDate = new Date(this.endDateYearly);
       const yearData = getYearDatabyRange(this.data, startDate, endDate)
-      console.log(this.processData(yearData), 'yearData')
       return this.processData(yearData)
     },
     processedOverallData() {
@@ -224,48 +228,55 @@ export default {
 
 
 <style>
-  .chart-title {
-    font-size: 24px;
-    font-weight: bold;
-    color: #333;
-    margin-bottom: 20px;
-    text-align: center;
-  }
+.chart-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20px;
+  text-align: center;
+}
 
-  .container {
-    margin-top: 20px;
-  }
+.container {
+  margin-top: 20px;
+}
 
-  .range-container {
-    margin-bottom: 10px;
-  }
+.range-container {
+  margin-bottom: 10px;
+}
 
-  .chart-container {
-    margin-bottom: 40px;
-  }
+.chart-container {
+  margin-bottom: 40px;
+}
 
-  .date-input {
-    position: relative;
-    display: inline-block;
-  }
+.date-input {
+  position: relative;
+  display: inline-block;
+}
 
-  .date-input input[type="date"] {
-    padding: 8px 32px 8px 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 14px;
-    width: 200px;
-  }
+.date-input input[type="date"] {
+  padding: 8px 32px 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  width: 200px;
+}
 
-  .date-input i {
-    position: absolute;
-    top: 50%;
-    right: 10px;
-    transform: translateY(-50%);
-    color: #999;
-  }
+.date-input i {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  color: #999;
+}
 
-  .date-input i.far.fa-calendar-alt {
-    font-size: 18px;
-  }
+.date-input i.far.fa-calendar-alt {
+  font-size: 18px;
+}
+
+.sticky-header {
+  position: sticky;
+  top: 0;
+  background-color: white;
+  z-index: 999;
+}
 </style>

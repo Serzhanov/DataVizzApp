@@ -7,7 +7,6 @@
         </button>
       </div>
     </div>
-    <p class="selected-options">Selected options: {{ selectedOptions }}</p>
   </div>
 </template>
 

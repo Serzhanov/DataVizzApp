@@ -69,6 +69,7 @@ export default {
 .upload-container {
   display: flex;
   align-items: center;
+  font-size: 16px;
 }
 
 .file-input {
@@ -79,10 +80,10 @@ export default {
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  padding: 0.5rem 1rem;
+  padding: 1.5rem 2rem;
   background-color: #007bff;
   color: #fff;
-  border-radius: 4px;
+  border-radius: 8px;
   transition: background-color 0.3s ease;
 }
 
@@ -91,22 +92,23 @@ export default {
 }
 
 .file-icon {
-  margin-right: 0.5rem;
+  margin-right: 1rem;
+  font-size: 24px;
 }
 
 .file-name {
-  margin-left: 1rem;
-  font-size: 14px;
+  margin-left: 2rem;
+  font-size: 16px;
   color: #777;
 }
 
 .upload-status {
   font-weight: bold;
   color: #007bff;
-  margin-left: 0.5rem;
-  font-size: 12px;
+  margin-left: 1rem;
+  font-size: 14px;
   background-color: #eaf5ff;
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
 }
 </style>

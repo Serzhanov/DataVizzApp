@@ -5,17 +5,21 @@ export function getOverallData(data) {
         const existingData = acc.find(item => new Date(item.Date).getFullYear() === year);
 
         if (existingData) {
-            existingData["Change %"] += record["Change %"];
+            existingData['Adj Close']+=record['Adj Close']
+            existingData.Close += record.Close
             existingData.High += record.High;
             existingData.Low += record.Low;
             existingData.Open += record.Open;
+            existingData.Volume+=record.Volume
             existingData.Price += record.Price;
             existingData.Count++;
         } else {
             const newDate = new Date(year, 0, 1); // Create a new date object with year and set month and day to '01'
             acc.push({
-                "Change %": record["Change %"],
+                Volume :record.Volume,
                 Date: newDate,
+                'Adj Close':record['Adj Close'],
+                Close:record.Close,
                 High: record.High,
                 Low: record.Low,
                 Open: record.Open,
@@ -29,11 +33,13 @@ export function getOverallData(data) {
 
     for (let i = 0; i < yearlyData.length; i++) {
         const item = yearlyData[i];
-        item["Change %"] /= item.Count;
+        item.Close /=item.Count;
+        item['Adj Close'] /= item.Count;
         item.High /= item.Count;
         item.Low /= item.Count;
         item.Open /= item.Count;
         item.Price /= item.Count;
+        item.Volume /= item.Volume
         delete item.Count;
     }
 
@@ -52,11 +58,13 @@ export function getYearDatabyRange(data, startDate, endDate) {
       const existingData = acc.find(item => item.Year === year && item.Month === month);
   
       if (existingData) {
-        existingData["Change %"] += record["Change %"];
+        existingData["Adj Close"] += record["Adj Close"];
+        existingData.Close += record.Close
         existingData.High += record.High;
         existingData.Low += record.Low;
         existingData.Open += record.Open;
         existingData.Price += record.Price;
+        existingData.Volume+=record.Volume
         existingData.Count++;
       } else {
         const newDate = new Date(year, month, 1); 
@@ -64,7 +72,9 @@ export function getYearDatabyRange(data, startDate, endDate) {
           Year: year,
           Month: month,
           Date: newDate,
-          "Change %": record["Change %"],
+          Close: record.Close,
+          Volume :record.Volume,
+          'Adj Close':record['Adj Close'],
           High: record.High,
           Low: record.Low,
           Open: record.Open,
@@ -78,7 +88,9 @@ export function getYearDatabyRange(data, startDate, endDate) {
   
     for (let i = 0; i < monthlyData.length; i++) {
       const item = monthlyData[i];
-      item["Change %"] /= item.Count;
+      item.Volume /=item.Volume
+      item.Close /= item.Count;
+      item["Adj Close"] /= item.Count;
       item.High /= item.Count;
       item.Low /= item.Count;
       item.Open /= item.Count;
