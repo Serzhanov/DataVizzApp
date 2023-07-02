@@ -3,6 +3,7 @@
     <div>
       <UploadFile @assign-data="setData"></UploadFile>
     </div>
+    <h1 v-if="data.length === 0" class="no-data-title">No data available, please upload a file</h1>
     <div class="sticky-header">
       <RadioButtons @changedOptions="setSelectedFeatures" :features="features"></RadioButtons>
     </div>
@@ -137,7 +138,7 @@ export default {
       this.data = data
       this.features = Object.keys(data[0]);
       this.features = this.features.filter(element => {
-        if (element === 'Date') {
+        if (element === 'Date' || element==='Year' || element==='Month') {
           return false
         }
         return true
@@ -279,4 +280,11 @@ export default {
   background-color: white;
   z-index: 999;
 }
+.no-data-title {
+  text-align: center;
+  margin-top: 50px;
+  font-size: 24px;
+  color: red;
+}
+
 </style>

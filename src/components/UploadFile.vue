@@ -1,6 +1,6 @@
 <template>
   <div class="upload-container">
-    <input type="file" id="fileInput" @change="handleFileSelection" class="file-input" />
+    <input type="file" accept=".csv" id="fileInput" @change="handleFileSelection" class="file-input" />
     <label for="fileInput" class="file-label">
       <span class="file-icon">
         <i class="fas fa-cloud-upload-alt"></i>
