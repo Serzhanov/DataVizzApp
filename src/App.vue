@@ -109,6 +109,9 @@ export default {
 
     }
   },
+  mounted(){
+    document.title='Yahoo currency analyse'
+  },
   data() {
     return {
       startDateYearly: null,
