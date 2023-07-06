@@ -22,6 +22,14 @@ export default {
       return {}
     }
   },
+  watch:{
+    min(newVal){
+      this.chartOptions.scales.y.min=newVal
+    },
+    max(newVal){
+      this.chartOptions.scales.y.max=newVal
+    }
+  },
   data() {
     return {
       chartOptions: {
@@ -61,24 +69,6 @@ export default {
     }
   },
   methods:{
-    getMin(){
-      if(this.daily){
-        return Math.min(...Object.values(this.min))-1
-      }
-      var tempMin=Math.min(...Object.values(this.min))
-      var min=Math.round(tempMin/ 10) * 10<=10?0:Math.round(tempMin/ 10) * 10-10
-      console.log(min,'Min value')
-      return min
-    },
-    getMax(){
-      if(this.daily){
-        return  Math.max(...Object.values(this.max))+1
-      }
-      var tempMax=Math.max(...Object.values(this.max))
-      var max=Math.round(tempMax/ 10) * 10 + 10
-      console.log(max,'Max value')
-      return max
-    }
   }
 }
 
