@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create an instance of Axios with custom configuration
 const api = axios.create({
-  baseURL: 'http://18.133.240.248', // Set the base URL for API requests
+  baseURL: 'https://18.133.240.248', // Set the base URL for API requests
   headers: {
     'Content-Type': 'application/json', // Set default headers for all requests
     // Add any other default headers as needed
